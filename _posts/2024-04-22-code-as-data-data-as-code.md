@@ -4,7 +4,7 @@ title: "Code as Data, Data as Code"
 categories: misc
 ---
 
-Modern CPUs employ a wide range of techniques, such as pipelining, branch prediction, and Out of Order execution (OOE), to optimize the control path and data flow. On the other hand, GPUs feature massively parallel machinery with compute units that are comparatively simpler. These unites are not [microcoded, nor do they utilize OOE, branch prediction, or superscalar capabilities, favoring instead the allocation of more silicon space for computation and high-speed registers.](https://www.nvidia.com/content/pdf/fermi_white_papers/p.glaskowsky_nvidia%27s_fermi-the_first_complete_gpu_architecture.pdf).
+Modern CPUs employ a wide range of techniques, such as pipelining, branch prediction, and Out of Order execution (OOE), to optimize the control path and data flow. On the other hand, GPUs feature massively parallel machinery with compute units that are comparatively simpler. These unites are not [microcoded (in the traditional sense), nor do they utilize OOE, branch prediction, or superscalar capabilities, favoring instead the allocation of more silicon space for computation and high-speed registers.](https://www.nvidia.com/content/pdf/fermi_white_papers/p.glaskowsky_nvidia%27s_fermi-the_first_complete_gpu_architecture.pdf).
 
 
 <p align="center">
