@@ -135,7 +135,15 @@ nvcc mat_mat.cu
 
 Download the complete code: <a href="/codes/mat_mat.cu" target="_blank">mat_mat.cu</a>
 
-From aforementioned query, our card's CC is `SM_75`. Due to user [GPU permission issue](https://developer.nvidia.com/nvidia-development-tools-solutions-err_nvgpuctrperm-permission-issue-performance-counters), I had to switch to root user mode 
+From aforementioned query, our card's CC is `SM_75`. Due to user [GPU permission issue](https://developer.nvidia.com/nvidia-development-tools-solutions-err_nvgpuctrperm-permission-issue-performance-counters),
+
+I had to rebuild the initrd after writing a configuration file to `/etc/modprobe.d`
+
+```bash
+sudo update-initramfs -u -k all
+```
+
+If it still doesn't work after reboot, one might have to switch to root user mode 
 
 ```bash
 /usr/local/cuda-12.1/nsight-compute-2023.1.1/ncu --call-stack --set detailed -k matrix_add_2D -o ncu_out_4 ./a.out
@@ -151,6 +159,22 @@ Command Line Interface (CLI) launch with specific metrics
 /usr/local/cuda-12.1/nsight-compute-2023.1.1/ncu --metrics
 l1tex__t_sectors_pipe_lsu_mem_global_op_ld.sm,
 l1tex__t_requests_pipe_lsu_mem_global_op_ld.sum ./a.out
+```
+
+```cpp
+__global__ void matrix_add_2D(const arr_t *__restrict__ A,
+                             const arr_t *__restrict__ B,
+                             arr_t *__restrict__ C, const size_t sw,
+                             const size_t sh) {
+
+
+ size_t idx = threadIdx.x + blockDim.x * (size_t)blockIdx.x;
+ size_t idy = threadIdx.y + blockDim.y * (size_t)blockIdx.y;
+
+
+ if ((idx < sh) && (idy < sw))
+   C[idx][idy] = A[idx][idy] + B[idx][idy];
+}
 ```
 
 ```bash
@@ -172,7 +196,7 @@ Success!
 
 
 After applying <a href="/codes/mat_mat_v2.cu" target="_blank">the coalescing memory access fix</a>
-
+by swapping `idx` and `idy` in previous version
 
 ```cpp
 __global__ void matrix_add_2D(const arr_t *__restrict__ A,
@@ -218,4 +242,19 @@ CUDA `__restrict__` has similar semantics to the corresponding one in C99, where
 
 If a kernel function parameter is a pointer to read-only data and is marked with both `__restrict__` and `__const__`, this may hint to the compiler that loads from this pointer
 can be cached in a special read-only cache, potential improving performance with faster memory access and reduced memory traffic.
+
+[Hardware Model](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#hardware-model) section of NSight's doc has more in-depth explanation of metrics we would obtain from profiling. 
+
+You might have heard the term CTA from CUDA Ninjas. 
+
+> A (Thread) Block is array of threads, also known as a Cooperative Thread Array (CTA)
+> The architecture can exploit this locality by providing fast shared memory and barriers between the threads within a single CTA.
+
+## Roofline Model Analysis
+
+> The [Roofline performance model](https://crd.lbl.gov/divisions/amcr/computer-science-amcr/par/research/roofline/) provides an intuitive and insightful way to understand applicatoin performance, identify bottlenecks and perform optimization for HPC applications 
+
+- [NERSC Roofline Model on NVIDIA GPUs](https://gitlab.com/NERSC/roofline-on-nvidia-gpus)
+
+
 
