@@ -20,98 +20,6 @@ than the traditional one.
 
 Let's jump right into the deep end from the beginning.
 
-> Arithmetic and other instructions are executed by the SMs; data and code are accessed from DRAM via the L2 cache. 
-
-[GPU Performance Background User's Guide](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html)
-
-> The instructions are stored in global memory ([implemented with DRAM](http://homepages.math.uic.edu/~jan/mcs572/memory_coalescing.pdf)) that is inaccessible to the user but are prefected into an instruction cache during execution
-
-[Where does CUDA Kernel Code reside on NVidia GPU](https://stackoverflow.com/questions/5121709/where-does-cuda-kernel-code-reside-on-nvidia-gpu)
-
-The instruction cache is a separate memory space (for safety?) that is used to store the instructions being executed by the GPU's streaming multiprocessors (SMs)
-
-[How CUDA Programming works](https://www.youtube.com/watch?v=QQceTDjA4f4) starts with introducing RAM attributes.
-
-| Kepler Architecture            | The L1 instruction cache size for the GT100 (a Kepler-based GPU) is [reported to be 4KB](https://forums.developer.nvidia.com/t/instruction-cache/25521).
-| Maxwell Architecture           | For Maxwell architecture, specifically the sm_5x series, the instruction cache size is also mentioned as [4KB](https://forums.developer.nvidia.com/t/code-instruction-cache/38939).
-| Pascal Architecture            | The L1 instruction cache size for Pascal is mentioned as [8KB](https://forums.developer.nvidia.com/t/instruction-cache-and-instruction-fetch-stalls/76883).
-| Volta and Ampere Architectures | For the Volta and Ampere architectures, the instruction cache size is not explicitly detailed in the provided sources, but the combined L1 data and shared memory cache sizes are 128 KB per SM for Volta and 192 KB per SM for [Ampere](https://forums.developer.nvidia.com/t/instruction-cache-size-for-ampere-and-volta-arch/251422) 
-
-A widely cited technical report is [Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking](https://arxiv.org/pdf/1804.06826)
-
-Both the host and the device can access 'global memory'; this interaction is mediated through the CUDA runtime, which handles memory allocation, data transfer, and synchronization to ensure data coherence."
-
-"Memory mapping" operations do imply PCIe operations. for example, [BAR (Base Address Registers)](https://stackoverflow.com/questions/30190050/what-is-the-base-address-register-bar-in-pcie)
-
-Due to latency and bandwidth characteristics of PCIe, [performance considerations](https://superuser.com/questions/1545812/can-the-gpu-use-the-main-computer-ram-as-an-extension) are crucial
-
-Many specially designed SoCs, such as Apple's M series processors, have a different memory model. Perhaps this topic is for another note.
-
-Further reading: [**Memory Latency Benchmarking**](https://en.algorithmica.org/hpc/cpu-cache/pointers/)
-
-#### Instruction Cycles
-
-> On Volta, registers are divided into two
-64-bit wide banks. One Volta instruction can only access 64 bits of each bank
-per clock cycle. Thus an instruction like FFMA (single precision floating-point
-fused multiply-add operation) can read at most two values from each bank
-per clock
-
-
-#### Register Bank Conflicts and Register Reuse Cache
-
-[Register Cache](https://developer.nvidia.com/blog/register-cache-warp-cuda/)
-
-<p align="center">
-    <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2017/10/paper4-625x348.jpg" />
-</p>
-
-<p style="text-align: center;"><a href="https://developer.nvidia.com/blog/register-cache-warp-cuda/">Execution and Memory hierarchy in CUDA GPUs.</a></p>
-
-Scott Gray has written a [comprehensive article](https://github.com/NervanaSystems/maxas/wiki/SGEMM#calculating-c-register-banks-and-reuse) on Register Banks and Reuse that provides valuable insights. 
-
-<!-- TODO: Add VectorAdd for instruction -->
-
-The compiler outputs a string of control variables, which control the sequence of micro-operations (uops), known as a control word. The micro-operations specified in a control word are called microinstructions.
-
-Higher-level language constructs such as `if`, `for`, and `while` [compile directly](https://developer.nvidia.com/gpugems/gpugems2/part-iv-general-purpose-computation-gpus-primer/chapter-34-gpu-flow-control-idioms) into GPU assembly instructions, to avoid [hazards](https://en.wikipedia.org/wiki/Hazard_(computer_architecture))
-
-References: [GPU Hardware Effects](https://github.com/Kobzol/hardware-effects-gpu/blob/master/bank-conflicts/README.md)
-
-<!-- Turns out even SASS code might not be the "real instructions" -->
-
-**Reuse Flags**
-
-> "Why reuse (register) mitigates register bank conflicts"
-"The least significant bit in reuse flags controls the cache for the first source operand slot"
-"The most significant bit is for the fourth source operand slot"
-
-**Wait barrier mask; read/write barrier index**
-
-While most instructions have fixed latency and can be statically scheduled by the assembler, instructions involving memory and shared resources typically have variable latency. 
-
-<!-- will stall the later instruction until the results of the earlier one are  -->
-
-
-**Instruction Encoding**
-
-Early GPU architectures (e.g. Fermi) is reported to use SIMD lane [masking](https://citeseerx.ist.psu.edu/document?doi=afda3825b7419c55f31d8d2f487206b263063ef3&repid=rep1&type=pdf) and 
-
-**Instruction decoding**
-
-GPUs typically have fewer instruction decoders compared to the number of cores, and a group of cores may only execute one or two different code paths at any given time. This suggests a more [streamlined approach](https://cs.stackexchange.com/questions/121080/what-are-gpus-bad-at) to instruction decoding and execution rather than a traditional stack-based approach. 
-
-
-<!-- LSU (Load Store Unit)
-
-Maybe it is time to take a look at cuAssembler?
-[CuAssembler Author introduction](https://www.zhihu.com/people/xiaoguiren/posts)
-
-Reverse compile of nvidiasm -->
-
-
-When it comes to understanding the [overheads of launching CUDA Kernels](https://www.hpcs.cs.tsukuba.ac.jp/icpp2019/data/posters/Poster17-abst.pdf), they are often [cited as being 5 microseconds or involving a few thousands of instructions](https://forums.developer.nvidia.com/t/any-way-to-measure-the-latency-of-a-kernel-launch/221413/8)
-
 ## Learning to use perf tools early
 
 Starting with checking SM [Compute Capability(CC)](https://gist.github.com/f0k/63a664160d016a491b2cbea15913d549?permalink_comment_id=5043495#gistcomment-5043495)
@@ -256,5 +164,137 @@ You might have heard the term CTA from CUDA Ninjas.
 
 - [NERSC Roofline Model on NVIDIA GPUs](https://gitlab.com/NERSC/roofline-on-nvidia-gpus)
 
+In the kernel examples
+
+```cpp
+__global__ void kernel_A(double* A, int N, int M)
+{
+  double d = 0.0;
+  int idx = threadIdx.x + blockIdx.x * blockDim.x;
+
+  if (idx < N) {
+#pragma unroll(100)
+    for (int j = 0; j < M; ++j)
+    {
+      d += A[idx];
+    }
+
+    A[idx] = d;
+  }
+}
+
+```
+
+As we can see
+
+```assembly
+$L__BB1_4:
+        .pragma "nounruoll";
+        add.f64         %fd13, %fd116, %fd1;
+        ...
+```
+in a generated ptx segment <a href="/codes/unroll_pragma.ptx" target="_blank">unroll_pragma.ptx</a>
+
+By using 
+
+```bash
+nvcc --ptx kernel_abc.cu
+```
+
+`pragma_unroll` is usually used for reducing loop overhead associated with loop control instructions and branch mispredictions in exchange of larger generated code size register pressure and etc.
+
+Here is an [explanation](https://youtu.be/fsC3QeZHM1U?t=1352) of how to observe compute bound vs memory bound kernel behaviors in Nsight visualization
+
+## Microarchitecture
+
+> Arithmetic and other instructions are executed by the SMs; data and code are accessed from DRAM via the L2 cache. 
+
+[GPU Performance Background User's Guide](https://docs.nvidia.com/deeplearning/performance/dl-performance-gpu-background/index.html)
+
+> The instructions are stored in global memory ([implemented with DRAM](http://homepages.math.uic.edu/~jan/mcs572/memory_coalescing.pdf)) that is inaccessible to the user but are prefected into an instruction cache during execution
+
+[Where does CUDA Kernel Code reside on NVidia GPU](https://stackoverflow.com/questions/5121709/where-does-cuda-kernel-code-reside-on-nvidia-gpu)
+
+The instruction cache is a separate memory space (for safety?) that is used to store the instructions being executed by the GPU's streaming multiprocessors (SMs)
+
+[How CUDA Programming works](https://www.youtube.com/watch?v=QQceTDjA4f4) starts with introducing RAM attributes.
+
+| Kepler Architecture            | The L1 instruction cache size for the GT100 (a Kepler-based GPU) is [reported to be 4KB](https://forums.developer.nvidia.com/t/instruction-cache/25521).
+| Maxwell Architecture           | For Maxwell architecture, specifically the sm_5x series, the instruction cache size is also mentioned as [4KB](https://forums.developer.nvidia.com/t/code-instruction-cache/38939).
+| Pascal Architecture            | The L1 instruction cache size for Pascal is mentioned as [8KB](https://forums.developer.nvidia.com/t/instruction-cache-and-instruction-fetch-stalls/76883).
+| Volta and Ampere Architectures | For the Volta and Ampere architectures, the instruction cache size is not explicitly detailed in the provided sources, but the combined L1 data and shared memory cache sizes are 128 KB per SM for Volta and 192 KB per SM for [Ampere](https://forums.developer.nvidia.com/t/instruction-cache-size-for-ampere-and-volta-arch/251422) 
+
+A widely cited technical report is [Dissecting the NVIDIA Volta GPU Architecture via Microbenchmarking](https://arxiv.org/pdf/1804.06826)
+
+Both the host and the device can access 'global memory'; this interaction is mediated through the CUDA runtime, which handles memory allocation, data transfer, and synchronization to ensure data coherence."
+
+"Memory mapping" operations do imply PCIe operations. for example, [BAR (Base Address Registers)](https://stackoverflow.com/questions/30190050/what-is-the-base-address-register-bar-in-pcie)
+
+Due to latency and bandwidth characteristics of PCIe, [performance considerations](https://superuser.com/questions/1545812/can-the-gpu-use-the-main-computer-ram-as-an-extension) are crucial
+
+Many specially designed SoCs, such as Apple's M series processors, have a different memory model. Perhaps this topic is for another note.
+
+Further reading: [**Memory Latency Benchmarking**](https://en.algorithmica.org/hpc/cpu-cache/pointers/)
+
+#### Instruction Cycles
+
+> On Volta, registers are divided into two
+64-bit wide banks. One Volta instruction can only access 64 bits of each bank
+per clock cycle. Thus an instruction like FFMA (single precision floating-point
+fused multiply-add operation) can read at most two values from each bank
+per clock
 
 
+#### Register Bank Conflicts and Register Reuse Cache
+
+[Register Cache](https://developer.nvidia.com/blog/register-cache-warp-cuda/)
+
+<p align="center">
+    <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2017/10/paper4-625x348.jpg" />
+</p>
+
+<p style="text-align: center;"><a href="https://developer.nvidia.com/blog/register-cache-warp-cuda/">Execution and Memory hierarchy in CUDA GPUs.</a></p>
+
+Scott Gray has written a [comprehensive article](https://github.com/NervanaSystems/maxas/wiki/SGEMM#calculating-c-register-banks-and-reuse) on Register Banks and Reuse that provides valuable insights. 
+
+<!-- TODO: Add VectorAdd for instruction -->
+
+The compiler outputs a string of control variables, which control the sequence of micro-operations (uops), known as a control word. The micro-operations specified in a control word are called microinstructions.
+
+Higher-level language constructs such as `if`, `for`, and `while` [compile directly](https://developer.nvidia.com/gpugems/gpugems2/part-iv-general-purpose-computation-gpus-primer/chapter-34-gpu-flow-control-idioms) into GPU assembly instructions, to avoid [hazards](https://en.wikipedia.org/wiki/Hazard_(computer_architecture))
+
+References: [GPU Hardware Effects](https://github.com/Kobzol/hardware-effects-gpu/blob/master/bank-conflicts/README.md)
+
+<!-- Turns out even SASS code might not be the "real instructions" -->
+
+**Reuse Flags**
+
+> "Why reuse (register) mitigates register bank conflicts"
+"The least significant bit in reuse flags controls the cache for the first source operand slot"
+"The most significant bit is for the fourth source operand slot"
+
+**Wait barrier mask; read/write barrier index**
+
+While most instructions have fixed latency and can be statically scheduled by the assembler, instructions involving memory and shared resources typically have variable latency. 
+
+<!-- will stall the later instruction until the results of the earlier one are  -->
+
+
+**Instruction Encoding**
+
+Early GPU architectures (e.g. Fermi) is reported to use SIMD lane [masking](https://citeseerx.ist.psu.edu/document?doi=afda3825b7419c55f31d8d2f487206b263063ef3&repid=rep1&type=pdf) and 
+
+**Instruction decoding**
+
+GPUs typically have fewer instruction decoders compared to the number of cores, and a group of cores may only execute one or two different code paths at any given time. This suggests a more [streamlined approach](https://cs.stackexchange.com/questions/121080/what-are-gpus-bad-at) to instruction decoding and execution rather than a traditional stack-based approach. 
+
+
+<!-- LSU (Load Store Unit)
+
+Maybe it is time to take a look at cuAssembler?
+[CuAssembler Author introduction](https://www.zhihu.com/people/xiaoguiren/posts)
+
+Reverse compile of nvidiasm -->
+
+
+When it comes to understanding the [overheads of launching CUDA Kernels](https://www.hpcs.cs.tsukuba.ac.jp/icpp2019/data/posters/Poster17-abst.pdf), they are often [cited as being 5 microseconds or involving a few thousands of instructions](https://forums.developer.nvidia.com/t/any-way-to-measure-the-latency-of-a-kernel-launch/221413/8)
