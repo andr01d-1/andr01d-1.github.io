@@ -236,6 +236,34 @@ Many specially designed SoCs, such as Apple's M series processors, have a differ
 
 Further reading: [**Memory Latency Benchmarking**](https://en.algorithmica.org/hpc/cpu-cache/pointers/)
 
+
+### Memory Hierarchy and Operations
+
+**local memory** or thread-local (global) memory is actually [global memory](https://stackoverflow.com/questions/10297067/in-a-cuda-kernel-how-do-i-store-an-array-in-local-thread-memory). 
+
+#### Constant Cache
+
+is a specialized read-only cache used in GPUs to store constant data that is shared across multiple threads. This type of cache is particularly efficient when all threads across the same memory address, as it can broadcast a single value to all threads in a warp, minimizing memory access latency. 
+
+Per core L1 cache access is generally considered to be [very fast](https://stackoverflow.com/questions/30371708/what-are-the-access-times-for-different-gpu-memory-spaces) [(low number of cycles)](https://forums.developer.nvidia.com/t/fermi-l2-cache-how-fast-is-the-l2-cache-how-do-i-access-it/23176/8) according to numbers obtained on Fermi and [Kepler](https://stackoverflow.com/questions/4097635/how-many-memory-latency-cycles-per-memory-access-type-in-opencl-cuda).
+
+
+The content can be modified from the host side using the `cudaMemcpyToSymbol` function. This allows for flexibility in updating constant values between [kernel launches](https://carpentries-incubator.github.io/lesson-gpu-programming/constant_memory.html).
+
+#### Texture Cache
+
+Texture units have their own [L1 texture caches](https://stackoverflow.com/questions/76383420/ampere-constant-memory-and-read-only-cache), and the entire GPU [shares](https://computergraphics.stackexchange.com/questions/355/how-does-texture-cache-work-considering-multiple-shader-units) a [single L2 cache](https://developer.nvidia.com/blog/cuda-refresher-cuda-programming-model/).
+
+It is [reported](https://chipsandcheese.com/2021/04/16/measuring-gpu-memory-latency/) that
+> Nvidia sticks with a more conventional GPU memory subsystem with only two levels of cache and high L2 latency
+
+
+<p align="center">
+    <img src="https://www.techspot.com/articles-info/2729/images/2023-09-01-image-9.jpg" />
+</p>
+
+[From Why GPUs are the new Kings of Cache. Explained](https://www.techspot.com/article/2729-cpu-vs-gpu-cache/)
+
 #### Instruction Cycles
 
 > On Volta, registers are divided into two
@@ -262,6 +290,15 @@ Scott Gray has written a [comprehensive article](https://github.com/NervanaSyste
 The compiler outputs a string of control variables, which control the sequence of micro-operations (uops), known as a control word. The micro-operations specified in a control word are called microinstructions.
 
 Higher-level language constructs such as `if`, `for`, and `while` [compile directly](https://developer.nvidia.com/gpugems/gpugems2/part-iv-general-purpose-computation-gpus-primer/chapter-34-gpu-flow-control-idioms) into GPU assembly instructions, to avoid [hazards](https://en.wikipedia.org/wiki/Hazard_(computer_architecture))
+
+
+Similar to aforementioned coalescing example,
+> `shared_ld_bank_conflict`
+> `shared_st_bank_conflict`
+> `shared_efficiency`
+> `shared_load_transactions_per_request`
+
+can be used to check `bank conflicts` in a kernel.
 
 References: [GPU Hardware Effects](https://github.com/Kobzol/hardware-effects-gpu/blob/master/bank-conflicts/README.md)
 
@@ -296,5 +333,8 @@ Maybe it is time to take a look at cuAssembler?
 
 Reverse compile of nvidiasm -->
 
-
 When it comes to understanding the [overheads of launching CUDA Kernels](https://www.hpcs.cs.tsukuba.ac.jp/icpp2019/data/posters/Poster17-abst.pdf), they are often [cited as being 5 microseconds or involving a few thousands of instructions](https://forums.developer.nvidia.com/t/any-way-to-measure-the-latency-of-a-kernel-launch/221413/8)
+
+*Pinned memory* allows for *faster* data transfer between the host and the device becaues it eliminates the need for an intermediate copy to a staging area. This is achieved through DMA. 
+
+[Interleaving streams streams help hide latencies](https://engineering.purdue.edu/~smidkiff/ece563/NVidiaGPUTeachingToolkit/Mod14DataXfer/Mod14DataXfer.pdf)
