@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Learning Nvidia GPU Microarchitecture"
+title: "Learning Nvidia GPU from Microarchitecture perspectives"
 categories: computer-arch
 ---
 
@@ -237,7 +237,7 @@ Many specially designed SoCs, such as Apple's M series processors, have a differ
 Further reading: [**Memory Latency Benchmarking**](https://en.algorithmica.org/hpc/cpu-cache/pointers/)
 
 
-### Memory Hierarchy and Operations
+### [Memory Hierarchy](https://developer.nvidia.com/blog/cuda-refresher-cuda-programming-model/) and Operations
 
 **local memory** or thread-local (global) memory is actually [global memory](https://stackoverflow.com/questions/10297067/in-a-cuda-kernel-how-do-i-store-an-array-in-local-thread-memory). 
 
@@ -338,3 +338,22 @@ When it comes to understanding the [overheads of launching CUDA Kernels](https:/
 *Pinned memory* allows for *faster* data transfer between the host and the device becaues it eliminates the need for an intermediate copy to a staging area. This is achieved through DMA. 
 
 [Interleaving streams streams help hide latencies](https://engineering.purdue.edu/~smidkiff/ece563/NVidiaGPUTeachingToolkit/Mod14DataXfer/Mod14DataXfer.pdf)
+
+#### Shared memory resource
+
+> Shared memory is shared amongst all warps of a single block. The amount of memory that a block requires is either inferred by the compiler from variable declarations (`__shared__ int sharedArray[1024]`) or it can be explicitly passed as a parameter when launching a kernel (`kernel<<gridDim, blockDim, sharedMemorySize, stream>>(...)`);
+
+Perf metric to observe: `achieved_occupancy`
+
+
+#### Cooperative Thread Array (block)
+
+Cooperative Groups is introduced in CUDA 9, which aims to satisfy `safety`, `maintainability` and `modularity` by making [synchronizatoin an explicit part of programming model](https://developer.nvidia.com/blog/cooperative-groups/)
+ 
+> one SM can run several concurrent CUDA blocks depending on the resources needed by CUDA blocks. Each kernel is executed on one device and CUDA supports running multiple kernels on
+> a device at one time.
+
+<img src="https://developer-blogs.nvidia.com/wp-content/uploads/2020/06/kernel-execution-on-gpu-1.png"/>
+
+[CUDA Refresher: The CUDA Programming Model](https://developer.nvidia.com/blog/cuda-refresher-cuda-programming-model/)
+
