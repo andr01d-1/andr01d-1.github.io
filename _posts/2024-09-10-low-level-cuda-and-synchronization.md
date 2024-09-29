@@ -134,3 +134,17 @@ __global__ void combinedExample(int *input, input *output, int n)
 ```
 
 Without the block leader threadfence operation, we are risking a race condition for globalSum
+
+__What about\__syncwarp()__
+
+is a CUDA synchronization primitive used to synchronize threads within a warp
+
+It is typically used when threads in a warp need to perform more complicated communications or collective operations than what data exchange primitive provide. It is particularly important for ensuring correct behavior in divergent code paths within a warp.
+
+It was introduced in CUDA 9 to address challenge arising from [independent Thread Scheduling](https://accelsnow.com/CUDA-Warp-Primitives-and-Sync-Notes).
+
+It is potentially implemented with registers and has only one warp-level "barrier", allowing divergent threads to call it at different program counters and still converge.
+
+**Performance Implication**
+
+Warp-level synchronization with `__syncwarp()` can be faster than global/shared reduction/atomic operation when there is high contention, as it doesn't use atomic hardware
