@@ -153,7 +153,7 @@ can be cached in a special read-only cache, potential improving performance with
 
 [Hardware Model](https://docs.nvidia.com/nsight-compute/ProfilingGuide/index.html#hardware-model) section of NSight's doc has more in-depth explanation of metrics we would obtain from profiling. 
 
-You might have heard the term CTA from CUDA Ninjas. 
+You might have heard the term `CTA` from CUDA Ninjas. 
 
 > A (Thread) Block is array of threads, also known as a Cooperative Thread Array (CTA)
 > The architecture can exploit this locality by providing fast shared memory and barriers between the threads within a single CTA.
