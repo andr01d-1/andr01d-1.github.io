@@ -158,6 +158,13 @@ You might have heard the term CTA from CUDA Ninjas.
 > A (Thread) Block is array of threads, also known as a Cooperative Thread Array (CTA)
 > The architecture can exploit this locality by providing fast shared memory and barriers between the threads within a single CTA.
 
+
+CGA (Cooperative Grid Array)
+
+> A new cooperative grouping introduced in the Hopper Architecture (SM90)
+> [Clusters enable multiple thread blocks running concurrently across multiple SMs to synchronize and collaboratively fetch and exchange data](https://stackoverflow.com/questions/78510678/whats-cga-in-cuda-programming-model)
+
+
 ## Roofline Model Analysis
 
 > The [Roofline performance model](https://crd.lbl.gov/divisions/amcr/computer-science-amcr/par/research/roofline/) provides an intuitive and insightful way to understand applicatoin performance, identify bottlenecks and perform optimization for HPC applications 
