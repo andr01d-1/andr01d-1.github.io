@@ -189,3 +189,7 @@ shfl_down
 ```
 
 `__shfl_down` is particularly useful for optimizing algorithms that require communication between nearby threads, such as parallel reductions or scan operations, by leveraging the [warp's SIMD execution model](https://tschmidt23.github.io/cse599i/CSE%20599%20I%20Accelerated%20Computing%20-%20Programming%20GPUs%20Lecture%2018.pdf)
+
+
+## Synchronization
+
