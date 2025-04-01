@@ -66,3 +66,7 @@ pahole --show_reorg_steps --reorganize -C structure_name a.out
 [Hello eBPF auto layouting structs](https://mostlynerdless.de/blog/2024/03/25/hello-ebpf-auto-layouting-structs-7/)
 
 [10.39M Storage I/O Per Second From One Thread](https://spdk.io/news/2019/05/06/nvme/)
+
+### Post Mortem
+
+Google's open source size profiler for binaries [bloaty](https://github.com/google/bloaty)
