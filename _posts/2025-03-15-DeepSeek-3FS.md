@@ -4,7 +4,7 @@ title: "DeepSeek Code Reading and Study 01"
 categories: GPU, LLM, Distributed
 ---
 
-# DeepSeek's Fire-Flyer File System (3FS)
+## DeepSeek's Fire-Flyer File System (3FS)
 
 [3FS](https://github.com/deepseek-ai/3FS) is a distributed file system designed specifically for AI workloads, optimized for read-heavy scenarios and large scale metadata management. It aims to support various stages including training data preprocessing, dataset loading, checkpointing, KV cache for inference, and [embedding vector search](https://learn.microsoft.com/en-us/azure/search/vector-search-overview).
 

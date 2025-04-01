@@ -137,3 +137,5 @@ Spine-leaf or etc.
 <!-- https://docs.nvidia.com/cuda/cuda-for-tegra-appnote/ -->
 <!-- https://news.ycombinator.com/item?id=41374663 -->
 
+
+- [RDMA Aware Networks Programming User Manual](https://docs.nvidia.com/networking/display/rdmaawareprogrammingv17/key+concepts)
