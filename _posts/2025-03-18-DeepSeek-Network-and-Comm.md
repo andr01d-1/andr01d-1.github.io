@@ -97,12 +97,13 @@ qpReadyToRecv() → state transition to READY
 - Asynchronous allocation via `CoTask`  
 - Buffer lifecycle tied to coroutine scope  
 
-### [Mooncake](https://github.com/kvcache-ai/Mooncake/tree/main) Comparison  
-| Feature               | 3FS                    | Mooncake TransferEngine  |
-|-----------------------|------------------------|--------------------------|
-| Buffer Registration   | On-demand              | Pre-registered           |
-| Metadata Dependency   | None                   | Requires MetaService     |
-| Use Case              | General storage        | LLM inference-specific   |
+### [Mooncake](https://github.com/kvcache-ai/Mooncake/tree/main) Comparison
+
+| Feature | 3FS | Mooncake TransferEngine |
+|---------|-----|-------------------------|
+| Buffer Registration | On-demand| Pre-registered |
+| Metadata Dependency | None | Requires MetaService |
+| Use Case | General storage | LLM inference-specific |
 
 ## Folly Coroutine Integration  
 - **Full-stack async** from I/O to memory allocation  
