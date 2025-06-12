@@ -139,8 +139,6 @@ This demonstrates why **Peterson's and Dekker's algorithms** (classic mutual exc
 - Compiler Reordering: Modern compilers may reorder non-atomic operations; atomics also act as compiler barriers.
 - Real-World Impact: This explains why low-level lock-free code often requires careful use of atomics or fences (e.g., in OS kernels or databases).
 
-Here's the translation of the provided Chinese text into English:
-
 ---
 
 ## Instruction Reordering
@@ -211,9 +209,6 @@ Herb Sutter talks about considerations of compiler reordering, please see [Atomi
 - **Volatile**: Insufficient for multi-threaded synchronization (only prevents compiler reordering, not CPU reordering).  
 
 This interplay between compiler and CPU optimizations underpins the need for explicit memory ordering primitives in concurrent programming.
-
-
-Here is the English translation of the provided text:
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Low level CUDA and synchronization"
+title: "Low Level CUDA and Synchronization"
 categories: low-level-GPU
 ---
 ```c

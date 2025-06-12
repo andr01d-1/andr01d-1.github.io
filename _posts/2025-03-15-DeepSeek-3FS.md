@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "DeepSeek Code Reading and Study 01"
+title: "DeepSeek Filesystem"
 categories: GPU, LLM, Distributed
 ---
 
@@ -20,9 +20,6 @@ The core components of 3FS includes
 - Storage Service: Stores data using the [CRAQ (Chain Replication with Appointed Queries)](https://www.usenix.org/legacy/event/usenix09/tech/full_papers/terrace/terrace.pdf) for data synchronization and ensures high availability through its own mechanisms
 
 - Client: Uses FUSE clients for performance-insensitive applications and native clients for high performance requirements
-
-
-Here is the full translation of the document into English:
 
 ---
 
