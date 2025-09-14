@@ -344,3 +344,5 @@ Intel’s manual explains how locked atomic operations guarantee synchronization
 [Gavin Chouse C++ memory ordering](https://gavinchou.github.io/summary/c++/memory-ordering)
 
 [Gallery of processor cache effects](https://igoro.com/archive/gallery-of-processor-cache-effects/)
+
+[Occurrence of instructions among C/C++ binaries in Ubuntu 16.04](https://x86instructionpop.com/)
