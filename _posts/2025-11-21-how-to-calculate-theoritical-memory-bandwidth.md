@@ -12,7 +12,9 @@ The note content is inspired by an enlightening converation with [Faradawn](http
     <img src="https://cdn.mos.cms.futurecdn.net/WriSXYzQsqxcnYcMpA2BfK-801-80.jpg.webp" />
 </p>
 
-[GA102](https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.1.pdf)'s 32 bit G6X memory interfaces connect to corresponding [off-chip](https://forums.developer.nvidia.com/t/how-to-correctly-understand-cuda-global-memory-v-s-off-chip-pysical-location/275722) on a RTX 3090 PCB [Micron GDDR6X](https://www.micron.com/about/blog/company/partners/latest-nvidia-gpus-powered-by-innovation-collaboration-micron-gddr6x) VRAM
+<!-- TODO, Actually we should use 3090 PCB -->
+
+[GA102](https://www.nvidia.com/content/PDF/nvidia-ampere-ga-102-gpu-architecture-whitepaper-v2.1.pdf)'s 32 bit G6X memory interfaces connect to corresponding [off-chip](https://forums.developer.nvidia.com/t/how-to-correctly-understand-cuda-global-memory-v-s-off-chip-pysical-location/275722) on a RTX 4090 PCB [Micron GDDR6X](https://www.micron.com/about/blog/company/partners/latest-nvidia-gpus-powered-by-innovation-collaboration-micron-gddr6x) VRAM
 
 <p align="center">
     <img src="/images/ampere_offchip_memory.png">
