@@ -1,29 +1,39 @@
 ---
 layout: post
-title: "CPU Memory Model"
-categories: CPU, Memory Model
+title: "CPU Memory Model Part 1"
+categories: CPU Memory Model
 ---
-
-
-# CPU Memory Model Part 1
 
 [A memory consistency model is a contract between the hardware and software. The software promises to only reorder operations in ways allowed by the model, and in return, the software acknowledges that all such reorderings are possible and that it needs to account for them](https://jamesbornholt.com/blog/memory-models/)
 
 
 [Modern Multi-core CPUs often share their LLC (Last Level Cache, most often the L3) between its cores, and as a result is often placed well apart from each individual core](https://www.quora.com/Can-someone-show-me-a-picture-of-a-level-3-cache-and-how-far-is-it-from-the-CPU)
 
-### Store and Forward Buffer
+<!-- ### Store and Forward Buffer -->
+### [*Store Buffer and Forwarding*](https://stackoverflow.com/questions/24176599/what-does-store-buffer-forwarding-mean-in-the-intel-developers-manual)
+
+What is a [_Store Buffer_](https://stackoverflow.com/questions/11105827/what-is-a-store-buffer)?
+
+How are they related to [_memory barriers_](https://dannas.name/2020/06/19/memory-barriers).
+
 
 <p align="center">
-    <img src="https://www.computerhope.com/issues/pictures/cpu-cache-die.png" />
+    <img src="https://www.computerhope.com/issues/pictures/cpu-cache-die.png"/>
 </p>
 
-Total store ordering (TSO) mostly preserves the same guarantees as sequential consistency, except that it allows the use of store buffers. These buffers hide wide latency, making execution **[significantly faster](https://courses.grainger.illinois.edu/cs533/sp2025/reading_list/2b.pdf)**
+[Total store ordering (TSO)](https://pages.cs.wisc.edu/~markhill/papers/primer2020_2nd_edition.pdf) mostly preserves the same guarantees as sequential consistency, except that it allows the use of store buffers. These buffers hide write latency, making execution **[significantly faster](https://courses.grainger.illinois.edu/cs533/sp2025/reading_list/2b.pdf)**
+
+Each core has its own _store buffer_ to
+
+```
+decouple execution from commit to L1d / cache misses,
+and allow speculative exec of stores without making speculation visble in coherent cache.
+```
 
 ARM memory model is a form of _weak_ ordering, allows almost any operation to be reordered, which enables a variety of hardware optimizations but is also a nightmare to program at the lowest levels. 
 
 
-Modern CPU's  L1 cache usually is divided into two distinct parts 
+Modern CPU's L1 cache usually is divided into two distinct parts
 
 **L1 Instruction Cache(L1i)** 
 and 
@@ -31,7 +41,7 @@ and
 
 More design and implementation details in Futher Reading section
 
-In addition to L1 cache, CPUs also have data-related components closer to the core, a `Load Buffer` and a `Store Buffer` (commonly referred to as the store buffer). These buffers handle pending memory operations before they reach the cache or main memory. 
+In addition to L1 cache, CPUs also have data-related components closer to the core, a `Load Buffer` and a `Store Buffer`. These buffers handle pending memory operations before they reach the cache or main memory. 
 <span style="color:blue">(Blue connections in below diagram)</span>.
 
 <div style="position:relative; width:100%; height:100vh;">
@@ -42,11 +52,11 @@ In addition to L1 cache, CPUs also have data-related components closer to the co
     <p>Interactive guide to speculative execution attacks hosted on <a href="https://mdsattacks.com/diagram.html" target="_blank">www.mdsattacks.com</a> from <a href="https://www.synkhronix.com/about/" target="_blank">micro-architectural attack researcher Stephan Van Schaik</a>.</p>
 </div>
 
-Two two buffers are part of `out of order engine`.
+Two buffers are part of `out of order engine`.
 
 ### Store Buffer Size in Intel Archiectures
 
-Intel Skylake architecture, typically feature a `store buffer` with 56 entries. This size is optimized for balancing performance and hardware constraints. For example:
+Intel Skylake architecture, typically features a `store buffer` with 56 entries. This size is optimized for balancing performance and hardware constraints. For example:
 - **Skylake Architecture**: A 56-entry `store buffer` achieves 98.1% of the performance of [an ideal store buffer implementation without stalls](https://microarch.org/micro53/papers/738300a568.pdf).
 - **Energy-Efficient Designs**: In scenarios with reduced store buffer sizes (e.g., 20 entries for energy efficiency), advanced techniques like [Store-Prefetch Burst (SPB)](https://microarch.org/micro53/papers/738300a568.pdf) can maintain comparable performance to larger buffers.
 
@@ -214,7 +224,7 @@ This interplay between compiler and CPU optimizations underpins the need for exp
 
 ### Runtime Reordering
 
-Different CPU architectures (manufacturers) adopt varying strategies for runtime reordering. This involves another topic: the **hardware memory model** of CPUs. This article provides a detailed introduction to this topic. Based on personal experience and understanding, here is a summary:
+Different CPU architectures (manufacturers) adopt varying strategies for runtime reordering. This involves another topic: the **hardware memory model** of CPUs. This note provides a detailed introduction to this topic.
 
 1. **Hardware Memory Models Differ Across CPU Architectures**  
    The strategies/limitations for instruction reordering vary depending on the hardware memory model of the CPU architecture.
@@ -323,6 +333,8 @@ Intel’s manual explains how locked atomic operations guarantee synchronization
 
 ## Further Reading
 
+[Size of store buffers on Inteal hardware? What exactly is a store buffer?](https://stackoverflow.com/questions/54876208/size-of-store-buffers-on-intel-hardware-what-exactly-is-a-store-buffer)
+
 [How to interpret LLC load misses from perf stats](https://stackoverflow.com/questions/52138985/how-to-interpret-llc-load-misses-from-perf-stats)
 
 <!-- [How can I profile a kernel over time with CUPTI](https://stackoverflow.com/questions/70403600/how-can-i-profile-a-kernel-over-time-with-cupti) -->
@@ -341,8 +353,12 @@ Intel’s manual explains how locked atomic operations guarantee synchronization
 
 [C++ and Beyond 2012: Herb Sutter Atomic Weapons 2 of 2](https://preshing.com/20120625/memory-ordering-at-compile-time/)
 
-[Gavin Chouse C++ memory ordering](https://gavinchou.github.io/summary/c++/memory-ordering)
+[Gavin Chou C++ memory ordering](https://gavinchou.github.io/summary/c++/memory-ordering)
 
 [Gallery of processor cache effects](https://igoro.com/archive/gallery-of-processor-cache-effects/)
 
 [Occurrence of instructions among C/C++ binaries in Ubuntu 16.04](https://x86instructionpop.com/)
+
+[Paper: Memory Barriers, A hardware view for Software hackers](http://codelabs.ru/reading/whymb.2010.07.23a.pdf)
+
+[How does the x86 TSO memory consistency model work when some of the stores being observed from store-forwarding](https://stackoverflow.com/questions/69925465/how-does-the-x86-tso-memory-consistency-model-work-when-some-of-the-stores-being)
