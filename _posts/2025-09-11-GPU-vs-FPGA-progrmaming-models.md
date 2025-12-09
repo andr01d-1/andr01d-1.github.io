@@ -273,6 +273,13 @@ TODO: History
 
 GPUs are root from Vector and Array Processors and *Graphics Pipelines*
 
+FPGA *programming* can broadly be seen as a form of concurrent programming with explicit memory management (without automatic CPU-style cache), more about CPU cache behavior can be found [here](./2024-10-31-CPU-Memory-Model-pt1.md)
+
+- Lack of Automatic Cache: A key characteristic of traditional CPU programming is the complex, hardware-managed cache hierarchy that transparently handles data and instruction fetching to hid memory latency. FPGAs typically do not have this built-in, automated caching system. Memory access is explicit and deterministic:
+
+  - Use on-chip memory blocks (Block RAMs or BRAMs) as scratchpads or specific, user-designed memory structures
+  
+
 
 ## Notes
 
@@ -280,7 +287,7 @@ Co-design is for balancing control and programmability across a spectrum of gran
 
 ### HLS
 
-There are corpus research being done using traditional control flow languages like C/C++ to model or express such hardware mapping called High Level Synthesize (HLS), personally, I find they are confusing 
+There are corpus research being done using traditional control flow languages like C/C++ to model or express such hardware mapping called [High Level Synthesize (HLS)](https://raw.githubusercontent.com/KastnerRG/pp4fpgas/gh-pages/main.pdf), personally, I find they are confusing 
 
 They do contain the concept of "scheduling", but it is closer to static scheduling in the software world. 
 
