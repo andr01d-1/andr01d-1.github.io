@@ -4,7 +4,23 @@ title: "Deterministic Reduction and CGA on GPU"
 categories: low-level-GPU
 ---
 
-The two topics are not necessarily related. 
+
+<!-- This is one series in CUDA basics
+
+sum reduction is 
+
+
+VLSI adder tree 
+
+shuffle command 
+
+and 
+
+
+## Parallel Algorithm
+
+
+Scan is a  -->
 
 
 CGA (Cooperative Grid Array) is
