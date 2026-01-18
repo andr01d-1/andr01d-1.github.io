@@ -10,8 +10,7 @@ categories: VLSI Microscaling micro-architecture
 
 Standard precision like FP32 and FP64 has been used extensively in general computation and [High-performance computing](https://en.wikipedia.org/wiki/High-performance_computing) world.
 
-With the raise of Deep Neural Networks, low bit data type becoming popular due to potential to drastically reduce model size, memory usage, power consumption and latency. 
-
+With the raise of Deep Neural Networks, low bit data type becomes popular due to potential to drastically reduce model size, memory usage, power consumption and latency. 
 
 [Microscaling](https://www.opencompute.org/documents/ocp-microscaling-formats-mx-v1-0-spec-final-pdf) is [further proposed](https://arxiv.org/pdf/2310.10537) to leverage "efficiency improvement" low bit format brought in a more "granular" fashion. 
 
@@ -31,7 +30,7 @@ Energy usage, area of FP8 FMA could be 40 ~ 50 percent more than INT8 FMA. This 
 
 [Quantization](https://en.wikipedia.org/wiki/Quantization_(signal_processing)) is a critical concept in Digital Signal Processing and Communication. Deep Learning has been heavily borrowing the concept to optimize models.
 
-<figure style="width: 80%; margin: 0 auto; text-align: center;">
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
     <img src="https://www.ai-bites.net/content/images/2023/09/image-4.png" style="width: 100%;">
     <figcaption>Symmetric vs Asymmetric Quantization</figcaption>
 </figure>
@@ -66,7 +65,7 @@ There is no need to store zero-point parameters, more memory is saved, and less 
 - Data across batches shares similar spatial pixels and channel statistics
 
 
-In notation denoted in [paper](https://www.usenix.org/system/files/atc21-zhou.pdf), for parameters like $S_w$, $S_x$, $S_y$, ". Let's assume $W$ is symmetrically quantized while the input $x$ and output $y$ activations are asymmetric (very common scenarios).
+In notation denoted in [paper](https://www.usenix.org/system/files/atc21-zhou.pdf), for parameters like "$S_w$, $S_x$, $S_y$..." Let's assume $W$ is symmetrically quantized while the input $x$ and output $y$ activations are asymmetric (very common scenarios).
 
 a float point divider" would introduce multi-cycle latency overhead. Integer approximation is a common solution to trade accuracy for latency. Something like a scale factor that can be done through "bit shifting" which is extremely efficient in hardware implementation.
 
@@ -165,3 +164,11 @@ E5M2 during gradient tensors
 [Per-Tensor and Per-Block Scaling Strategies for Effective FP8 Training](https://developer.nvidia.com/blog/per-tensor-and-per-block-scaling-strategies-for-effective-fp8-training/)
 
 [RISC-V Composable Extensions for MX Microscaling Data Formats for AI Tensors: Part One: Introduction to MX Data](https://fpga.org/category/microscaling-mx-formats/)
+
+[Floating-Point 8: An introduction to Efficient, Lower-Precision AI Training](https://developer.nvidia.com/blog/floating-point-8-an-introduction-to-efficient-lower-precision-ai-training/)
+
+[Unified FP8: Moving Beyond Mixed Precision for Stable and Accelerated MoE RL](https://lmsys.org/blog/2025-11-25-fp8-rl/)
+
+<!-- TODO How did DeepSeek do it -->
+
+[DeepSeek Technical Analysis - FP8 Training](https://dataturbo.medium.com/deepseek-technical-analysis-5-fp8-training-ff34768727b8)

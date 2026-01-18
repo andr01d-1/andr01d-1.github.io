@@ -10,7 +10,7 @@ categories: low-level-GPU
 sum reduction is 
 
 
-VLSI adder tree 
+VLSI adder/sum tree 
 
 shuffle command 
 
@@ -22,6 +22,11 @@ and
 
 Scan is a  -->
 
+## Why would we need [Cooperative Groups (CG)](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cooperative-groups.html)
+
+- Finer-Grained Synchronization: Move beyond the *block-level __syncthreads()* to synchronize smaller groups (like *warps*) or partitions within a block,
+  Essential for algorithms requiring tighter coordination
+
 
 CGA (Cooperative Grid Array) is
 
@@ -30,7 +35,24 @@ CGA (Cooperative Grid Array) is
 
 CoffeeBeforeArch has a great [tutorial](https://www.youtube.com/watch?v=k7K-h7P1Bdk) on this [code sample](https://github.com/CoffeeBeforeArch/cuda_programming/blob/master/03_sum_reduction/cooperative_groups/sumReduction.cu)
 
-However, using `atomicAdd` on float-point numbers will introduce nondeterministic results.
+However, using `atomicAdd` on float-point numbers will introduce non-deterministic results.
+
+## Determinism of CG's reduce API
+
+CG API provides [Reduce() function](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/cooperative-groups.html#reduce) for performing a parallel reduction on the data provided by each thread in the specified group.
+
+- However, in the programming guide, there is no mention of if this method is deterministic
+
+- Another interesting bit
+
+```
+Hardware acceleration is used for reductions when available (requires Compute Capability 8.0 (Ampere Arch?) or greater).
+A software fallback is available for older hardware where hardware acceleration is not available. Only 4B types are accelerated by hardware.
+```
+
+
+
+### Deterministic float-point reduction algorithm 
 
 Let's design a deterministic reduction algorithm using CGA for float point numbers
 
@@ -207,5 +229,69 @@ shfl_down
 `__shfl_down` is particularly useful for optimizing algorithms that require communication between nearby threads, such as parallel reductions or scan operations, by leveraging the [warp's SIMD execution model](https://tschmidt23.github.io/cse599i/CSE%20599%20I%20Accelerated%20Computing%20-%20Programming%20GPUs%20Lecture%2018.pdf)
 
 
+### Potential Hardware Implementation of Shuffle Command
+
+Directly Register-to-Register Transfer: The shuffle instruction *`(SASS SHFL)`* utilizes a dedicated data path within the Streaming Multiprocessor (SM). It treats the registers
+of all 32 threads in a warp as a shared pool for that single operation
+
+[Warp-level Synchrony](https://developer.nvidia.com/blog/using-cuda-warp-level-primitives/): Because threads in a warp execute in lockstep on the hardware (SIMT), the data produced by one thread's register is available to be read by another thread's register in the same clock cycle or a fixed latency pipeline
+
+Source Lane Selection: The hardware uses *`"source lane ID"`* to determine which register to read from
+
+The performance implication is, this hardware feature was first introduced with the *Kepler Architecture*, 
+
+the CUDA *`__shfl`* instructions are widely understood to be implemented on NVIDIA GPUs via a dedicated *`crossbar network "xbar"`* that connects the register files of the individual cores within a SM
+
+
+
+```
+No memory is needed apart from the SMX registers that hold the data before and after the instruction.
+
+However there is no need to route the exchange via additional registers or memory (unlike previous compute capabilities, where shared memory was the only to move data between threads within the SM)
+
+If my assumption is true that memory crossbar is reused for the shuffle instruction, then additional circuitry is needed to route
+register accesses via that crossbar. Otherwise an crossbar would be needed
+```
+
+According to [one commenter](https://forums.developer.nvidia.com/t/shuffle-instructions-on-kepler-how-implemented/28504/3)
+
 ## Synchronization
 
+## Appendix
+
+
+### AtomicAdd
+
+
+## Warp-Level Primitives
+
+## shfl_
+
+The parameter var
+
+```cpp
+T __shfl_sync(unsigned mask, T var, int srcLane, int width=warpSize)
+```
+
+The parameter `var` represents the quantity (yes, it is pass-by-value) that the thread will make available for other warp-lanes to read. 
+
+
+
+
+## References
+
+[Cooperative Groups Flexible Groups of Threads](https://juser.fz-juelich.de/record/915940/files/08-aherten-cooperative-groups.pdf)
+
+[Hardware vs. Software Implementation of Warp-Level Features in Vortex RISC-V GPU](https://arxiv.org/pdf/2505.03102)
+
+[Kepler GK110/GK210 Architecture Whitepaper](https://www.nvidia.com/content/dam/en-zz/Solutions/Data-Center/tesla-product-literature/NVIDIA-Kepler-GK110-GK210-Architecture-Whitepaper.pdf)
+
+[Shuffle instructions on Kepler: How (is it) implemented](https://forums.developer.nvidia.com/t/shuffle-instructions-on-kepler-how-implemented/28504)
+
+[How is shfl_sync implemented](https://forums.developer.nvidia.com/t/how-is-shfl-sync-implemented/216367)
+
+More on general hardware concept
+
+<!-- Great article on many concepts in computer system -->
+
+[Lessons learned while building crossbar interconnects](https://zipcpu.com/blog/2019/07/17/crossbar.html)
