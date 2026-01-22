@@ -42,7 +42,7 @@ Though Itanium C++ ABI is designed for the now-defunct [Itanium architecture](ht
 The ABI specifies key mechanisms like stack unwindling, the format of exception tables (metadata used by the runtime), and language-specific "personality routines" that handle language-specific tasks during the process
 
 
-When reading about exceptions, we may encounter [Structured Exception Handling (SEH)](https://learn.microsoft.com/en-us/cpp/cpp/structured-exception-handling-c-cpp?view=msvc-170) is specific to Windows, other operating systems use different mechanisms for similar tasks; for example, Linux uses POSIX signals(like SIGSEGV for access violations) instead of SEH
+When reading about exceptions, we may encounter [Structured Exception Handling (SEH)](https://learn.microsoft.com/en-us/cpp/cpp/structured-exception-handling-c-cpp?view=msvc-170), which is specific to Windows. Other operating systems use different mechanisms for similar tasks; for example, Linux uses POSIX signals (like SIGSEGV for access violations) instead of SEH
 
 
 <!-- ## Cache control  -->
