@@ -78,6 +78,16 @@ On newer GPU arch like Hopper, blocks in the same Cluster can use distributed sh
 
 ["To mitigate the cost of transferring data across the gigantic die, H100 has a feature called `Distributed Shared Memory (DSMEM)`. Using this feature, applications can keep data within a GPC, or a cluster of SMs. This should allow for lower latency data sharing than the global atomics, while being able to share dat across more threads than would fit in a workgroup."](https://chipsandcheese.com/2023/07/02/nvidias-h100-funny-l2-and-tons-of-bandwidth/)
 
+<details>
+  <summary>Number of SMs per GPC (Graphics Processing Cluster)</summary>
+
+  varies by architecture
+
+  - 8 GPCs, 72 TPCs (9 TPCs/GPC), 2 SMs/TPC, 144 SMs per full GPU [Hopper](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)
+  - 8 GPCs, 8 TPCs/GPC, 2 SMs/TPC, 16 SMs/GPC, 128 SMs per full GPU [Ampere](https://developer.nvidia.com/blog/nvidia-ampere-architecture-in-depth/) 
+
+</details>
+
 DSMEM is implemented through thread block clusters, which allow a thread block to access the shared memory of other thread blocks within its cluster
 
 [At the CUDA level, all DSMEM segments from thread blocks in a cluster are mapped into the generic address space of each thread, allowing direct referencing with simple pointers](https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/)

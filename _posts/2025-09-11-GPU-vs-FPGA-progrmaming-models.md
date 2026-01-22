@@ -176,7 +176,7 @@ Routing problems are generally, NP-complete or NP-hard, that is another can of w
 
 The core of GPU's parallel processing capability lies in [Streamming-Multiprocessors (SM)](https://modal.com/gpu-glossary/device-hardware/streaming-multiprocessor)
 
-*They are roughly analogues to the cores of CPUs. That is, SMs both execute computations and store state available for computation in registers, with associated caches. but no specu*
+*They are roughly analogues to the cores of CPUs. That is, SMs both execute computations and store state available for computation in registers, with associated caches. but no speculative execution*
 
 There are two perspectives when describing CUDA's programming model, programmer's view and hardware perspective. 
 
@@ -186,7 +186,7 @@ There are two perspectives when describing CUDA's programming model, programmer'
 <!-- If we use NVIDIA's terminology, each GPU has multiple (hundreds sometimes) SMs, [A SM is made up of 4 partitions](https://stackoverflow.com/questions/76638686/understanding-warp-scheduler-utilization-in-cuda-maximum-concurrent-warps-vs-re) (processing blocks), each of which having its own (warp) schedulers; and that warps  -->
 
 
-<!-- Warp is the fundemental unit of execution, representing a bundle of 32 threads that are processed in a single clock cycle through SIMD fashion by the hardware.  -->
+<!-- Warp is the fundamental unit of execution, representing a bundle of 32 threads that are processed in a single clock cycle through SIMD fashion by the hardware.  -->
 
 
 From a hardware perspective, The abstraction is mapped onto prefabricated the GPU's physical architecture. Unlike FPGA, we can't "redefined/reconnect" the implementation details of this architecture or the internal blocks. using NVIDIA's architecture as an example,  [an SM is made up of 4 partitions](https://stackoverflow.com/questions/76638686/understanding-warp-scheduler-utilization-in-cuda-maximum-concurrent-warps-vs-re)(processing blocks) and each partition has its own warp scheduler to manage the workload.
@@ -220,7 +220,7 @@ One important aspect of optimization for CUDA performance is avoiding [register 
 
 
 
-[*A large part of the thread's state is contained in its associated registers*](https://forums.developer.nvidia.com/t/why-in-thread-context-switching-there-is-no-need-to-store-state/38196) which helps GPU to perform context switch in a much faster fashion than classical CPUs. This could serve as a classical example of HW/SW codesign.
+[*A large part of the thread's state is contained in its associated registers*](https://forums.developer.nvidia.com/t/why-in-thread-context-switching-there-is-no-need-to-store-state/38196) which helps GPU to perform context switch in a much faster fashion than classical CPUs. This could serve as a classical example of HW/SW co-design.
 
 ### Design Philosophy
 
@@ -235,7 +235,7 @@ One important aspect of optimization for CUDA performance is avoiding [register 
 
 Control units are quite complex:
   - Sophisticated logic for fetching instructions
-  - Access ports to the instruction memory (Creating multiported SRAM is challenging at the transistor level, read-write synchronization is always tricky)
+  - Access ports to the instruction memory (Creating multi-port SRAM is challenging at the transistor level, read-write synchronization is always tricky)
   - on-chip instruction caches to reduce the latency of instruction fetch.
 
 Having multiple processing units share a control unit can result in significant reduction in hardware manufacturing cost and power consumption.
@@ -247,7 +247,7 @@ Having multiple processing units share a control unit can result in significant 
  *The overhead of fetching and decoding, all the overhead of programming, of having a programmable engine, is on the order of 10% to 20% — small enough that there’s really no gain to a specialized accelerator. You get at best 20% more performance and lose all the advantages and flexibility that you get by having a programmable engine*
 
 
-This could be the next topic we investigate like energy or other phyiscal or cost of "programmability".
+This could be the next topic we investigate like energy or other physical cost of "programmability".
 
 [The cost of memory access is high](https://semiengineering.com/is-programmable-overhead-worth-the-cost/), 
 
