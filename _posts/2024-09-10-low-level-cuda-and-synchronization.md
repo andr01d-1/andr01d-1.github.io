@@ -50,6 +50,17 @@ __What is the difference between `asm volatile("bar.sync 0;")` and `__threadfenc
 
 `bar.sync` provides fine-grained control for synchronizing threads within a block, while `__threadfence()` ensures global memory consistency across entire GPU.
 
+### [But why do we need `__threadfence()` at all?](https://forums.developer.nvidia.com/t/is-threadfence-useful-at-all/244413)
+
+CUDA follows a [relaxed memory consistency model](https://en.wikipedia.org/wiki/Consistency_model#Relaxed_memory_consistency_models). This means the order in which memory operations (reads and writes) appear to occur may not match the order in they were written in your code, unless the explicit synchronization is used.
+
+<!-- Changes made by one thread are not immediately guarrnteed -->
+
+CUDA does not guarantee global memory write [visibility](https://forums.developer.nvidia.com/t/best-way-to-communicate-small-amount-of-data-across-ctas/222852) across threads within an iteration.
+
+CUDA 12.x and newer emphasize "scoped" operations. Consistency is often defined by [a scope (e.g., thread, block, device, or system)](https://docs.nvidia.com/cuda/cuda-programming-guide/04-special-topics/memory-sync-domains.html), allowing you to restrict synchronization to only the necessary groups of threads for better performance
+
+
 [CUDA: how to use barrier.sync](https://stackoverflow.com/questions/53662484/cuda-how-to-use-barrier-sync)
 
 __block to block communication__
@@ -59,7 +70,7 @@ __block to block communication__
 
 Before Hopper
 
-Different blocks can only reliablely communicate using global memory
+Different blocks can only reliably communicate using global memory
 
 Blocks cannot directly access each other's shared memory or L1 cache.
 
@@ -148,3 +159,9 @@ It is potentially implemented with registers and has only one warp-level "barrie
 **Performance Implication**
 
 Warp-level synchronization with `__syncwarp()` can be faster than global/shared reduction/atomic operation when there is high contention, as it doesn't use atomic hardware
+
+## References
+
+[CUDA Memroy Model by CUDA Community Meetup Group](https://www.youtube.com/watch?v=VJ1QLrmfQws)
+
+[GPU Memory Consistency: Specification, Testing, and Opportunities  for Performance Tooling](https://www.sigarch.org/gpu-memory-consistency-specifications-testing-and-opportunities-for-performance-tooling/)
