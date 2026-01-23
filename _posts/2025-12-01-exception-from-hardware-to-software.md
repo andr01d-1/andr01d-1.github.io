@@ -101,6 +101,15 @@ Safety Mechanisms
 ```
 
 
+<details>
+
+<summary>A side note on MCU interrupts</summary>
+
+<p>In general, MCU's ISR (Interrupt Service Routines) are not <a href="https://stackoverflow.com/questions/34992058/is-it-a-good-embedded-programming-practice-to-disable-an-interrupt-in-an-interru">interruptable</a>. However, <a href="https://www.embedded.com/programming-embedded-systems-exception-and-interrupt-handlers/">"most toolchains (e.g. IAR, KEIL, GCC-ARM) and libraries (e.g. STM32Cube, TivaWare, etc)
+implementing the fault exceptions as infinite loops. This is the wrong behavior for any product because it completely ties up the CPU and causes the embedded device to "freeze""</a></p>
+
+</details>
+
 ## Reference
 
 ### Hardware Exceptions
@@ -158,7 +167,6 @@ Safety Mechanisms
 ### Compiler
 
 [Safety-critical software and optimising compilers](https://softwareengineering.stackexchange.com/questions/267277/safety-critical-software-and-optimising-compilers)
-
 
 ### Software
 
