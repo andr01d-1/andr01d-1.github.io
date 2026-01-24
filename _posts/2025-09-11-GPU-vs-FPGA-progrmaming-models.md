@@ -6,10 +6,10 @@ categories: Heterogeneous Computing, FPGA, GPU, Programming Models
 
 ## [What Is An FPGA](https://www.youtube.com/watch?v=gUsHwi4M4xE)
 
-This [visualization](https://www.youtube.com/watch?v=iHg0mmIg0UU) is probably the best visual guide I have encountered explaning how FPGA is different from our rudimentary mental model of single process processor being programmed.
+This [visualization](https://www.youtube.com/watch?v=iHg0mmIg0UU) is probably the best visual guide I have encountered explaining how FPGA is different from our rudimentary mental model of single process processor being programmed.
 
 
-Conceptually, an FPGA can be visualized as a giant virtual [breadboard](https://m.media-amazon.com/images/I/61mral12olL.jpg) or a field of [digital LEGOs](https://projectf.io/about/). It is covered with a "sea of configurable blocks" and a programmable network of switches can be wired together. The exact naming being used for these blocks are ["vendoer terms"](https://www.reddit.com/r/FPGA/comments/fz981e/fpga_terminology_clarification/), we use [Xilinx](https://gab.wallawalla.edu/~larry.aamodt/engr433/xilinx_10/xilinx_10_gls.pdf)'s convention.
+Conceptually, an FPGA can be visualized as a giant virtual [breadboard](https://m.media-amazon.com/images/I/61mral12olL.jpg) or a field of [digital LEGOs](https://projectf.io/about/). It is covered with a "sea of configurable blocks" and a programmable network of switches can be wired together. The exact naming being used for these blocks are ["vendor terms"](https://www.reddit.com/r/FPGA/comments/fz981e/fpga_terminology_clarification/), we use [Xilinx](https://gab.wallawalla.edu/~larry.aamodt/engr433/xilinx_10/xilinx_10_gls.pdf)'s convention.
 
   - [Configurable Logic Blocks (CLBs)](https://digilent.com/blog/fpga-configurable-logic-block/): These are the basic building units of an FPGA
     - Lookup Tables (LUTs): Memory cells that store a pre-calculated list of outputs for any given set of inputs. 
@@ -93,14 +93,14 @@ It sorta resembles sheet music.
 
 Each *bar line* visually represents the passage of *time*.
 
-- HDLs explicitly model timing through constructs that specify delays, event ordering and sychronozation, enabling simulation.
+- HDLs explicitly model timing through constructs that specify delays, event ordering and synchronization, enabling simulation.
 
 - Music scores use timing signatures and note durations to organize (sound) events over measurable intervals
 
 Multiple instruments can concurrently play, as long as they meet timing constraints.
 
 
-The domainated languages like VHDL and (System)Verilog can model at [gate-level](https://www.chipverify.com/verilog/verilog-gate-level-modeling), [register-transfer-level](https://en.wikipedia.org/wiki/Register-transfer_level) and [behavior level](https://www.digikey.com/en/maker/tutorials/2025/behavioral-modeling-in-verilog-part-19). 
+The dominated languages like VHDL and (System)Verilog can model at [gate-level](https://www.chipverify.com/verilog/verilog-gate-level-modeling), [register-transfer-level](https://en.wikipedia.org/wiki/Register-transfer_level) and [behavior level](https://www.digikey.com/en/maker/tutorials/2025/behavioral-modeling-in-verilog-part-19). 
 
 
 - Behavior level modeling is closer to the "software programming", we describe what a circuit does, or its algorithm, rather than how it is physically implemented. Behavioral models are used for fast simulation and verification of a system's overall function and are often not synthesizable into actual hardware
@@ -293,7 +293,7 @@ They do contain the concept of "scheduling", but it is closer to static scheduli
 
 ### Warp Occupancy
 
-The maximum number of concurrent warps per SM is limited and is likely different from architecture to architecture or from *Compute Compability(CC)* to CC.
+The maximum number of concurrent warps per SM is limited and is likely different from architecture to architecture or from *Compute capability(CC)* to CC.
 
 For example, [for Volta and Ampere Arch, this number is 64 or 48](https://docs.nvidia.com/cuda/ampere-tuning-guide/index.html). This number is also related to [*occupancy*](https://docs.modular.com/glossary/gpu/occupancy/)
 
