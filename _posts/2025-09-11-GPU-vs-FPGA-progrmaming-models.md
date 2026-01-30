@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "GPU vs FPGA programming models"
-categories: Heterogeneous Computing, FPGA, GPU, Programming Models
+categories: Heterogeneous-Computing FPGA GPU Programming-Models
 ---
 
 ## [What Is An FPGA](https://www.youtube.com/watch?v=gUsHwi4M4xE)
@@ -318,7 +318,7 @@ For example, [for Volta and Ampere Arch, this number is 64 or 48](https://docs.n
 
 [Invalidate+Compare: A Timer-Free GPU Cache Attach Primitive](https://github.com/0x5ec1ab/invalidate-compare/blob/main/attack-primitive/primitive-example.cu)
 
-[Can L2 cache persistant policy be changed when kernel is running](https://forums.developer.nvidia.com/t/can-l2-cache-persistant-policy-be-changed-when-kernel-is-running/220816)
+[Can L2 cache persistent policy be changed when kernel is running](https://forums.developer.nvidia.com/t/can-l2-cache-persistant-policy-be-changed-when-kernel-is-running/220816)
 
 [Advanced Topics in Computer Architecture Lecture #8: GPU Warp Scheduling Research + DRAM Basics](https://pages.cs.wisc.edu/~sinclair/courses/cs758/fall2019/handouts/lecture/cs758-fall19-gpu_schedRes_dram.pdf)
 
