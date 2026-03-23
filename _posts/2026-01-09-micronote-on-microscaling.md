@@ -4,6 +4,8 @@ title: "Micronote on Microscaling"
 categories: VLSI Microscaling micro-architecture
 ---
 
+Updated on: 03/22/2026 After a quick lecture from generous [Faradawn Yang](https://github.com/faradawn)
+
 ## What is MicroScaling
 
 [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) is the most widely used technical standard for binary floating-point arithmetic. 
@@ -39,6 +41,8 @@ Energy usage, area of FP8 FMA could be 40 ~ 50 percent more than INT8 FMA. This 
 Symmetric Clipping. Floating-point formats are naturally symmetric around zero. In contrast,
 signed integers in two’s complement have one extra negative value:
 ```
+
+Here `S` is the scale factor that would be referred through the rest of the note, where `Z` is "bias"
 
 <!-- $ Q_{min}=-2b-1 $ and $ Q_{max}=2b-1-1 $ -->
 
@@ -137,6 +141,60 @@ An alternative is using KL divergence to measure kMax and kMin
 E4M3 for weight and activation tensors
 E5M2 during gradient tensors
 
+## Intuition in [minifloat](https://en.wikipedia.org/wiki/Minifloat)
+
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
+    <img src="https://storage.googleapis.com/gweb-cloudblog-publish/images/Three_floating-point_formats.max-700x700.png" style="width: 100%;">
+    <figcaption>Three floating-point formats</figcaption>
+</figure>
+
+[BF16](https://en.wikipedia.org/wiki/Bfloat16_floating-point_format), maintains 8 bit [exponent](https://fabiensanglard.net/floating_point_visually_explained/) of the [IEEE FP32](https://en.wikipedia.org/wiki/Single-precision_floating-point_format) specification, while reducing the precision of the fraction.
+
+```
+Typically forward activations and weights require more precision, so E4M3 datatype is best used during forward pass.
+In the backward pass, however, gradients flowing through the network typically are less susceptible to the loss of precision,
+but require higher dynamic range.
+
+Therefore they are best stored using E5M2 data format.
+
+H100 TensorCores provide support for any combination of these types as the inputs, enabling us to store each tensor using its preferred
+precision
+```
+
+
+## FP4
+
+### MXFP4 vs NVFP4
+
+How NVFP4 handles two level scaling,
+
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
+  <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2025/06/nvfp4-two-level-scaling.gif">
+  <figcaption>NVFP4 two-level scaling per-block and per-tensor precision structure</figcaption>
+</figure>
+
+
+
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
+  <img src="https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/_images/MXFP8_FP8_comparison_1.png">
+  <figcaption> MXFP8 uses multiple scaling factors for a single tensor. The picture shows only 4 values per block for simplicity, but real MXFP8 has 32 values per block</figcaption>
+</figure>
+
+from [Using FP8 and FP4 with Transformer Engine](https://docs.nvidia.com/deeplearning/transformer-engine/user-guide/examples/fp8_primer.html)
+
+
+<!-- Looks like DeepSeek's weight quantization inspiring NVFP4's design also 2D scaling -->
+
+<!-- column wise, row wise or etc https://kratzert.github.io/2016/02/12/understanding-the-gradient-flow-through-the-batch-normalization-layer.html -->
+
+<!-- https://afmck.in/posts/2023-02-26-parallelism/ -->
+
+<!-- It actually affects how the different strategies are applied, column-wise row-wise, Tensor parallelism... -->
+
+<!-- Intuition: https://dev.to/lewis_won/tensor-parallelism-by-hand-3eh -->
+
+<!-- What tensors are applied to??  -->
+
 ## References
 
 [A White Paper on Neural Network Quantization](https://arxiv.org/abs/2106.08295)
@@ -168,6 +226,12 @@ E5M2 during gradient tensors
 [Floating-Point 8: An introduction to Efficient, Lower-Precision AI Training](https://developer.nvidia.com/blog/floating-point-8-an-introduction-to-efficient-lower-precision-ai-training/)
 
 [Unified FP8: Moving Beyond Mixed Precision for Stable and Accelerated MoE RL](https://lmsys.org/blog/2025-11-25-fp8-rl/)
+
+[https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/](https://developer.nvidia.com/blog/introducing-nvfp4-for-efficient-and-accurate-low-precision-inference/)
+
+[Pretraining Large Language Models with NVFP4](https://arxiv.org/pdf/2509.25149v1)
+
+[BFloat16: The secret to high performance on Cloud TPUs](https://cloud.google.com/blog/products/ai-machine-learning/bfloat16-the-secret-to-high-performance-on-cloud-tpus)
 
 <!-- TODO How did DeepSeek do it -->
 

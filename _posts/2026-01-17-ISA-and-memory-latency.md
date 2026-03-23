@@ -47,11 +47,11 @@ mov r64, m64
 
 shouldn't have many implications for a software engineer, right? 
 
-Yeah, I have heard of [TLB](https://en.wikipedia.org/wiki/Translation_lookaside_buffer) and [MMU](https://en.wikipedia.org/wiki/Memory_management_unit), but my mental model is always that we can have a bounded access latency for this part of the system.
+Yeah, I have heard of [TLB](https://en.wikipedia.org/wiki/Translation_lookaside_buffer) and [MMU](https://en.wikipedia.org/wiki/Memory_management_unit), my mental model is always that we can have a bounded access latency for this part of the system.
 
 But that is incorrect. When [a TLB miss happening](https://stackoverflow.com/questions/37825859/cache-miss-a-tlb-miss-and-page-fault), MMU is forced to read from "RAM".
 
-*When a [page fault](https://en.wikipedia.org/wiki/Page_fault) triggered, the issue is further aggravated, but it is out of the scope of this note*
+*When a [page fault](https://en.wikipedia.org/wiki/Page_fault) triggered, the issue is further aggravated, it is out of the scope of this note*
 
 ## Reading from "Memory"
 
@@ -93,10 +93,10 @@ More things like Buses, DRAM, prefetchers are source of such non-deterministic.
 
 In most modern ISAs, the (worst) latency of memory instructions (like loads and stores) is intentionally left unspecified and determined.
 
-The ISAs usually specifies what a load/store does (semantics, ordering rules, addressing models), but not how fast it must complete. Different cores with the same ISA can have different cache sizes, associativity, frequencies and memory controllers, so the cycle cost of a load that misses L1 but hits L2 or DRAM is inherently implementation dependent. Even within one core, **the same load instruction can vary in latency**
+The ISAs usually specifies what a load/store does (semantics, ordering rules, addressing models), not how fast it must complete. Different cores with the same ISA can have different cache sizes, associativity, frequencies and memory controllers, so the cycle cost of a load that misses L1 but hits L2 or DRAM is inherently implementation dependent. Even within one core, **the same load instruction can vary in latency**
 
 
-For a given x86 core, [vendor publishes tables of instruction *throughput* and *latency* assuming L1 cache hits](https://www.intel.com/content/www/us/en/content-details/679103/instruction-throughput-and-latency.html), but a load that misses in L1 and goes to L2, L3, or DRAM incurs large extra delays that are not encoded in the ISA itself.
+For a given x86 core, [vendor publishes tables of instruction *throughput* and *latency* assuming L1 cache hits](https://www.intel.com/content/www/us/en/content-details/679103/instruction-throughput-and-latency.html), a load that misses in L1 and goes to L2, L3, or DRAM incurs large extra delays that are not encoded in the ISA itself.
 
 
 Agner Fog's instruction tables list latencies/throughput for `mov` and many other x86 instructions, again per micro-architecture and with explicit caveat that cache misses and other effects can "increase the clock counts considerably"
