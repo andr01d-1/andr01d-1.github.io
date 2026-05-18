@@ -25,6 +25,37 @@ N:M Find-Grained Sparsity is a semi-structured pruning technique. For every cont
 
 [Nvidia's Sparse Tensor Cores exploit a 2:4 (50%) sparsity pattern that leads to twice the math throughput of dense matrix units](https://arxiv.org/pdf/2104.08378).
 
+
+### Block Sparse Format
+
+There are multiple SpMM (Sparse-matrix dense-matrix multiplication), software is responsible for translating [multiple compressed storage format](https://developer.nvidia.com/blog/establishing-a-scalable-sparse-ecosystem-with-the-universal-sparse-tensor/).
+
+The storage formats (CSR, COO, BSR or etc.) are known only to the software layer. 
+
+The hardware is fixed for "2:4 sparsity". For every four compressed values, we would need one extra byte for storing their original relative indices, as illustrated in below diagram.
+
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
+    <img src="https://developer-blogs.nvidia.com/wp-content/uploads/2021/06/sparse-tensor-cores.png" style="width: 100%">
+    <figcaption>GEMM using block sparse weights and dense activations. </figcaption>
+</figure>
+
+
+
+### Hardware 
+
+
+$$\mathbf{C} = \alpha \cdot \operatorname{op}(\mathbf{A}) \cdot \operatorname{op}(\mathbf{B}) + \beta \cdot \mathbf{C}
+$$
+
+[In this operation, `A` is a sparse matrix of size `MxK`, while `B` and `C` are dense matrices of size `KxN`, `MxN`, respectively.](https://developer.nvidia.com/blog/accelerating-matrix-multiplication-with-block-sparse-format-and-nvidia-tensor-cores/)
+
+<figure style="width: 100%; margin: 0 auto; text-align: center;">
+    <img src="https://www.glennklockwood.com/garden/attachments/NVIDIA-A100-Structured-Sparsity.png" style="width: 100%">
+    <!-- <figcaption>GEMM using block sparse weights and dense activations. </figcaption> -->
+</figure>
+
+I haven't found any description of hardware implementation details, the illustration suggests, `indices` serve as control inputs for the [multiplexer](https://en.wikipedia.org/wiki/Multiplexer) select lines. This ensures that only the specific dense matrix (input activation) element indexed is forwarded to the multiplier input, effectively bypassing zero values.
+
 TODO:
 
 Finish reading the paper
@@ -291,7 +322,7 @@ where
 - $A^T$ (Transposed Weights): To make the inner dimensions match $x$, PyTorch transposes the weights to `[Input Features, Output Features]`
 - $y$: `[Batch_Size, out_features]`
 
-PyTorch defaults to the Channel First (NCHW) memory format. Early versions of cuDNN were originally optimized for such layout. For Convolution Weights (Output, Input, Height, Width). However with the introduction of TensorCore, [it is actually faster to use NHWC layout](https://stackoverflow.com/questions/44280335/how-much-faster-is-nchw-compared-to-nhwc-in-tensorflow-cudnn).
+PyTorch defaults to the Channel First (NCHW) memory format. Early versions of cuDNN were originally optimized for such layout. For Convolution Weights (Output, Input, Height, Width). However with the introduction of TensorCore, [it is actually faster to use NHWC layout](https://stackoverflow.com/questions/44280335/how-much-faster-is-nchw-compared-to-nhwc-in-tensorflow-cudnn). (I wonder what the motivation of this change though?)
 
 For LLMs, above formulation enables us to stack input sequences row-by-row.
 
@@ -385,9 +416,17 @@ A paper from NVIDIA
 
 [Accelerating Sparse Deep Neural Networks](https://arxiv.org/pdf/2104.08378)
 
+[Accelerating Matrix Multiplication with Block Sparse Format and Nvidia Tensor Cores](https://developer.nvidia.com/blog/accelerating-matrix-multiplication-with-block-sparse-format-and-nvidia-tensor-cores/)
+
+[Exploiting Ampere Structured sparsity with cuSPARSELt](https://developer.nvidia.com/blog/exploiting-ampere-structured-sparsity-with-cusparselt/)
+
 [How to access sparse tensor core functionality in CUDA](https://stackoverflow.com/questions/74018900/how-to-access-sparse-tensor-core-functionality-in-cuda)
 
+[A gentle introduction to GEMM using mma tensor cores](https://am17an.bearblog.dev/a-gentle-introduction-to-gemm-using-mma-tensor-cores/)
+
 [Accelerating large scale mixture of experts training in Pytorch](https://developer.nvidia.com/blog/accelerating-large-scale-mixture-of-experts-training-in-pytorch/)
+
+[NVIDIA A100 Tensor Core GPU Architecture](https://images.nvidia.com/aem-dam/en-zz/Solutions/data-center/nvidia-ampere-architecture-whitepaper.pdf)
 
 [The longest PTX instructions for Tensor Cores](https://ashvardanian.com/posts/longest-ptx-instruction/)
 
